@@ -4,6 +4,11 @@ function filterData(data, rules){
       let broken = false
       let oprs = Object.keys(rules[rule]);
       console.log(oprs)
+      if (oprs.includes("in")){
+        console.log(y[rule])
+        broken = broken || (rules[rule]["in"].indexOf(y[rule]) >= 0)
+
+      }
       if (oprs.includes("match")){
         console.log(y[rule])
         broken = broken || y[rule] != rules[rule]["match"]
