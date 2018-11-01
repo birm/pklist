@@ -7,22 +7,21 @@ function filterData(data, rules){
       if (oprs.includes("in")){
         console.log(y[rule])
         broken = broken || (rules[rule]["in"].indexOf(y[rule]) >= 0)
-
       }
-      if (oprs.includes("match")){
+      if ((!broken) || oprs.includes("match")){
         console.log(y[rule])
         broken = broken || y[rule] != rules[rule]["match"]
       }
-      if (oprs.includes("regex")){
+      if ((!broken) || oprs.includes("regex")){
         console.log(y[rule])
         let re = new RegExp(rules[rule]["regex"])
         broken = broken || !re.test(y[rule])
       }
-      if (oprs.includes("less")){
+      if ((!broken) | |oprs.includes("less")){
         console.log(y[rule])
         broken = broken || y[rule] >= rules[rule]["less"]
       }
-      if (oprs.includes("greater")){
+      if ((!broken) || oprs.includes("greater")){
         console.log(y[rule])
         broken = broken || y[rule] <= rules[rule]["greater"]
       }
