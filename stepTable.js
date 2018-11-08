@@ -45,15 +45,22 @@ function filterData(data, rules){
   })
 }
 
+function makeTable(data, fields){
+  return "<table></table>"
+}
+
 
 class stepTable{
-  constructor(url, filters, options){
+  constructor(url, filters, div, options){
     this.url = url
     this.filters = filters
     this.options = options
     this.urlparam = options.urlparam || "filter"
     this.state = JSON.parse(encodeURIComponent(getParameterByName(urlparam))) || {}
-    // TODO needs a destination to render
+    if (typeof div == "string"){
+      div = document.getElementById(div)
+    }
+    this.div = div
   }
   // in case we want to generalize later
   async _get_data(url){
@@ -65,7 +72,7 @@ class stepTable{
   }
   // clear the dest
   _clear(){
-    return 0
+    this.div.innerHTML = ""
   }
   // to get the next filter
 }
