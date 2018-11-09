@@ -40,8 +40,28 @@ function filterData(data, rules){
   })
 }
 
-function makeTable(data, fields){
-  return "<table></table>"
+// make a basic html table from the data
+function make_table(data, headers){
+  outstr = "<table class='steptable'>"
+  outstr += "<tr>"
+  for (let j=0; j < headers.length; j++){
+      outstr += "<th>"
+      outstr += headers[j]
+      outstr += "</th>"
+  }
+  outstr += "</tr>"
+  for (let i = 0; i < data.length; i++){
+      outstr += "<tr>"
+      for (let j=0; j < headers.length; j++){
+          let val = data[i][headers[j]] || "missing"
+          outstr += "<td>"
+          outstr += val
+          outstr += "</td>"
+      }
+      outstr +="</tr>"
+  }
+  outstr+="</table>"
+  return outstr
 }
 
 
