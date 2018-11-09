@@ -15,25 +15,20 @@ function filterData(data, rules){
       let oprs = Object.keys(rules[rule]);
       console.log(oprs)
       if (oprs.includes("in")){
-        console.log(y[rule])
-        broken = broken || (rules[rule]["in"].indexOf(y[rule]) >= 0)
+        broken = broken || (rules[rule]["in"].indexOf(y[rule]) == -1)
       }
-      if ((!broken) || oprs.includes("match")){
-        console.log(y[rule])
+      if ((!broken) && oprs.includes("match")){
         broken = broken || y[rule] != rules[rule]["match"]
       }
-      if ((!broken) || oprs.includes("regex")){
-        console.log(y[rule])
+      if ((!broken) && oprs.includes("regex")){
         let re = new RegExp(rules[rule]["regex"])
-        broken = broken || !re.test(y[rule])
+        broken = broken && !re.test(y[rule])
       }
-      if ((!broken) | |oprs.includes("less")){
-        console.log(y[rule])
-        broken = broken || y[rule] >= rules[rule]["less"]
+      if ((!broken) || oprs.includes("less")){
+        broken = broken && y[rule] >= rules[rule]["less"]
       }
       if ((!broken) || oprs.includes("greater")){
-        console.log(y[rule])
-        broken = broken || y[rule] <= rules[rule]["greater"]
+        broken = broken && y[rule] <= rules[rule]["greater"]
       }
       if (broken){
         return false
