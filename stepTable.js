@@ -51,8 +51,7 @@ function makeTable(data, fields){
 
 
 class stepTable{
-  constructor(url, filters, div, options){
-    this.url = url
+  constructor(div, filters, options){
     this.filters = filters
     this.options = options
     this.urlparam = options.urlparam || "filter"
@@ -63,8 +62,33 @@ class stepTable{
     this.div = div
   }
   // in case we want to generalize later
-  async _get_data(url){
+  async load_url(url){
     return await fetch(url)
+  }
+  // load from a table, more specifically an element with children representing records, each with children representing attributes
+  // pass an array to headers if the child does not contain headers as its first record 
+  // note that it can be anything table-like in this regard.
+  load_table(element, headers){
+      let startat = 0
+      if (!headers){
+          startat = 1
+          headers = []
+          let headrow = element.children[0].children
+          for (let i = 0; i < headrow.length; i++){
+              headers[i] = (headrow[i].textContent)
+          }
+          console.log(headers)
+      }
+      data = []
+      for (let j = startat; j < element.children.length; j++){
+          let res = {}
+          let maxval = Math.min(element.children[j].children.length, headers.length)
+          for (let i = 0; i < maxval; i++){
+              res[headers[i]] = (element.children[j].children[i].textContent)
+          }
+          data.push(res)
+      }
+      return data
   }
   // render the data to the dest
   _render(display_data){
