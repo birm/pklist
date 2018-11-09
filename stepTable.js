@@ -81,8 +81,9 @@ class stepTable{
   constructor(div, filters, options){
     this.filters = filters
     this.options = options
+    this.urlfield = options.urlfield || "url"
     this.urlparam = options.urlparam || "filter"
-    this.state = JSON.parse(encodeURIComponent(getParameterByName(urlparam))) || {}
+    this.state = JSON.parse(getParameterByName(urlparam)) || {}
     if (typeof div == "string"){
       div = document.getElementById(div)
     }
@@ -93,7 +94,7 @@ class stepTable{
     return await fetch(url)
   }
   // load from a table, more specifically an element with children representing records, each with children representing attributes
-  // pass an array to headers if the child does not contain headers as its first record 
+  // pass an array to headers if the child does not contain headers as its first record
   // note that it can be anything table-like in this regard.
   load_table(element, headers){
       let startat = 0
@@ -118,15 +119,38 @@ class stepTable{
       return data
   }
   // render the data to the dest
-  run(display_data){
+  run(data){
+    let res = []
     // which filter is the first unassigned?
     Object.keys(this.state)
     this.filters
-    // get possible values for that filter, accounting for active filters
-    // make data where list of objects; each has name of element and link to that selected
-    // render it
-    // if they're all assigned, just render the data wrt the filters
-    return display_data
+    nextFilter = ""
+    for (i in this.filters){
+      if (!this.state.hasOwnProperty(this.filters[i])){
+        nextFilter = this.filters[i];
+        break;
+      }
+    }
+    if (nextFilter == ""){
+      // we can display the data properly
+      this.urlfield
+    } else {
+      // make this filter
+      // get possible values for that filter, accounting for active filters
+      // make data where list of objects; each has name of element and link to that selected
+      let base = window.location.split("?")[0]
+      let basestate = this.state
+      // FILTER THE DATA
+      for(){
+        let val = val
+        basestate[nextFilter] = {'match': val}
+        let link = base + "?" + this.urlparam + encodeURIComponent(basestate)
+        res.push({nextFilter: val, 'url': link})
+      }
+
+      // render it
+    }
+    return res
   }
   // clear the dest
   _clear(){
