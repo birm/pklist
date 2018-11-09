@@ -40,8 +40,8 @@ function filterData(data, rules){
   })
 }
 
-// make a basic html table from the data
-function make_table(data, headers){
+// make a basic linked html table from the data
+function make_table(data, headers, linkSrc, linkDst){
   outstr = "<table class='steptable'>"
   outstr += "<tr>"
   for (let j=0; j < headers.length; j++){
@@ -51,11 +51,23 @@ function make_table(data, headers){
   }
   outstr += "</tr>"
   for (let i = 0; i < data.length; i++){
+      // link the row if needed
+      if (linkDst == "_COLUMN" && data[i][linkSrc]){
+          outstr+="<a href='" + data[i][linkSrc] + "'>"
+      }
       outstr += "<tr>"
       for (let j=0; j < headers.length; j++){
           let val = data[i][headers[j]] || "missing"
+          // handle cell link if needed
           outstr += "<td>"
+          if ((linkDst == headers[j] || linkDst == "_COLUMN") && data[i][linkSrc]){
+              outstr+="<a href='" + data[i][linkSrc] + "'>"
+          }
           outstr += val
+          // close link if we opened it
+          if ((linkDst == headers[j] || linkDst == "_COLUMN") && data[i][linkSrc]){
+              outstr+="</a>"
+          }
           outstr += "</td>"
       }
       outstr +="</tr>"
