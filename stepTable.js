@@ -13,7 +13,6 @@ function filterData(data, rules){
     for (rule in rules){
       let broken = false
       let oprs = Object.keys(rules[rule]);
-      console.log(oprs)
       if (oprs.includes("in")){
         broken = broken || (rules[rule]["in"].indexOf(y[rule]) == -1)
       }
@@ -79,19 +78,23 @@ function make_table(data, headers, linkSrc, linkDst){
 
 class stepTable{
   constructor(div, filters, options){
+    this.data_ready = false
     this.filters = filters
     this.options = options
     this.urlfield = options.urlfield || "url"
     this.urlparam = options.urlparam || "filter"
-    this.state = JSON.parse(getParameterByName(urlparam)) || {}
+    this.state = JSON.parse(getParameterByName(this.urlparam)) || {}
     if (typeof div == "string"){
       div = document.getElementById(div)
     }
     this.div = div
   }
   // in case we want to generalize later
-  async load_url(url){
-    return await fetch(url)
+  load_url(url){
+    fetch(url).then(x=>x.json()).then(x=>{
+      this.data = x;
+      this.data_ready = true
+    })
   }
   // load from a table, more specifically an element with children representing records, each with children representing attributes
   // pass an array to headers if the child does not contain headers as its first record
@@ -105,9 +108,8 @@ class stepTable{
           for (let i = 0; i < headrow.length; i++){
               headers[i] = (headrow[i].textContent)
           }
-          console.log(headers)
       }
-      data = []
+      let data = []
       for (let j = startat; j < element.children.length; j++){
           let res = {}
           let maxval = Math.min(element.children[j].children.length, headers.length)
@@ -116,45 +118,49 @@ class stepTable{
           }
           data.push(res)
       }
-      return data
+      this.data = data;
+      this.data_ready = true
   }
-  // render the data to the dest
-  run(data){
-    let res = []
+  pick_table(data){
+    let htmltable
+    data = filterData(data, this.state)
     // which filter is the first unassigned?
     Object.keys(this.state)
     this.filters
-    nextFilter = ""
-    for (i in this.filters){
+    let nextFilter = ""
+    for (let i in this.filters){
       if (!this.state.hasOwnProperty(this.filters[i])){
         nextFilter = this.filters[i];
         break;
       }
     }
     if (nextFilter == ""){
-      // we can display the data properly
-      this.urlfield
+      htmltable = make_table(data, Object.keys(data[0]), this.urlfield, "_COLUMN")
     } else {
-      // make this filter
-      // get possible values for that filter, accounting for active filters
-      // make data where list of objects; each has name of element and link to that selected
-      let base = window.location.split("?")[0]
-      let basestate = this.state
-      // FILTER THE DATA
-      for(){
-        let val = val
-        basestate[nextFilter] = {'match': val}
-        let link = base + "?" + this.urlparam + encodeURIComponent(basestate)
-        res.push({nextFilter: val, 'url': link})
-      }
 
-      // render it
+      let base = window.location.href.split("?")[0]
+      let basestate = this.state
+      let skipstate = this.state
+      skipstate[nextFilter] = {}
+      let allurl = base + "?" + this.urlparam + "="+ encodeURIComponent(JSON.stringify(basestate))
+      let res = [{filter: "All", url: allurl}]
+      for(let i in data){
+        let val = data[i][nextFilter]
+        basestate[nextFilter] = {'match': val}
+        let link = base + "?" + this.urlparam + "="+ encodeURIComponent(JSON.stringify(basestate))
+        res.push({filter: val, 'url': link})
+      }
+      htmltable = make_table(res, ["filter"], 'url', "_COLUMN")
     }
-    return res
+    return htmltable
+  }
+  // render the data to the dest
+  run(){
+    this._render(this.pick_table(this.data))
   }
   // clear the dest
-  _clear(){
-    this.div.innerHTML = ""
+  _render(x){
+    this.div.innerHTML = x
   }
   // to get the next filter
 }
