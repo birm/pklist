@@ -118,7 +118,14 @@ class stepTable{
       return data
   }
   // render the data to the dest
-  _render(display_data){
+  run(display_data){
+    // which filter is the first unassigned?
+    Object.keys(this.state)
+    this.filters
+    // get possible values for that filter, accounting for active filters
+    // make data where list of objects; each has name of element and link to that selected
+    // render it
+    // if they're all assigned, just render the data wrt the filters
     return display_data
   }
   // clear the dest
