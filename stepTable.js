@@ -144,6 +144,7 @@ class stepTable{
       skipstate[nextFilter] = {}
       let allurl = base + "?" + this.urlparam + "="+ encodeURIComponent(JSON.stringify(basestate))
       let res = [{filter: "All", url: allurl}]
+      // TODO remove duplicate filter options
       for(let i in data){
         let val = data[i][nextFilter]
         basestate[nextFilter] = {'match': val}
